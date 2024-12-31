@@ -38,22 +38,20 @@ function source.complete(self, params, callback)
     local all_snippets = MiniSnippets.expand({ match = false, insert = false })
     local items = {}
     for _, snip in ipairs(all_snippets or {}) do
-        if snip.prefix ~= nil then
-            if snip.prefix ~= "" then
-                table.insert(items, {
-                    label = snip.prefix,
-                    insertTextFormat = 2,
-                    word = snip.prefix,
-                    kind = cmp.lsp.CompletionItemKind.Snippet,
-                    data = {
-                        snippet = snip,
-                    },
-                    documentation = {
-                        kind = cmp.lsp.MarkupKind.Markdown,
-                        value = snip.desc .. "\n" .. "```" .. vim.bo.filetype .. "\n" .. snip.body .. "\n" .. "```",
-                    },
-                })
-            end
+        if snip.prefix ~= nil and snip.prefix ~= "" then
+            table.insert(items, {
+                label = snip.prefix,
+                insertTextFormat = 2,
+                word = snip.prefix,
+                kind = cmp.lsp.CompletionItemKind.Snippet,
+                data = {
+                    snippet = snip,
+                },
+                documentation = {
+                    kind = cmp.lsp.MarkupKind.Markdown,
+                    value = snip.desc .. "\n" .. "```" .. vim.bo.filetype .. "\n" .. snip.body .. "\n" .. "```",
+                },
+            })
         end
     end
 
@@ -74,10 +72,10 @@ function source.execute(self, completion_item, callback)
     local match = MiniSnippets.config.expand.match or MiniSnippets.default_match
     local insert = MiniSnippets.config.expand.insert or MiniSnippets.default_insert
 
-    -- Insert the snippet at the cursor. Because ‘nvim-cmp’ already typed the
-    -- snippet’s prefix, we might want to remove it first. However, mini.snippets
-    -- “insert” logic can handle that if we set region, so we first try remove it
-    -- using default_match's region, and fallback to use cmp's information.
+    -- Insert the snippet at the cursor. Because cmp already typed the
+    -- snippet’s prefix, we might want to remove it first. However, mini.snippets'
+    -- `insert` logic can handle that if we set `region`, so first try to remove it
+    -- using default_match's returned `region`, then fallback to use cmp's information.
     local m = match({ snip })
     if m ~= nil and #m > 0 then
         insert(m[1])
