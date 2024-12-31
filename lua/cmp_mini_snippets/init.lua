@@ -34,11 +34,12 @@ function source.complete(self, params, callback)
     -- Retrieve all snippets for the current buffer context from mini.snippets
     -- Use `match = false` so we get *all* snippets, because cmp will not request
     -- completion at every keystrok, so let cmp do the fuzzy match job.
-    -- and `insert = false` so we don’t actually insert anything.
+    -- Use `insert = false` so we don’t actually insert anything.
     local all_snippets = MiniSnippets.expand({ match = false, insert = false })
     local items = {}
     for _, snip in ipairs(all_snippets or {}) do
         if snip.prefix ~= nil and snip.prefix ~= "" then
+            local desc = snip.desc or snip.description or snip.prefix
             table.insert(items, {
                 label = snip.prefix,
                 insertTextFormat = 2,
@@ -49,7 +50,7 @@ function source.complete(self, params, callback)
                 },
                 documentation = {
                     kind = cmp.lsp.MarkupKind.Markdown,
-                    value = snip.desc .. "\n" .. "```" .. vim.bo.filetype .. "\n" .. snip.body .. "\n" .. "```",
+                    value = desc .. "\n" .. "```" .. vim.bo.filetype .. "\n" .. snip.body .. "\n" .. "```",
                 },
             })
         end
@@ -83,14 +84,14 @@ function source.execute(self, completion_item, callback)
         -- Handle the case when match does not return anything, when will this happen?
         -- Anyway, be defensive.
         local cursor = vim.api.nvim_win_get_cursor(0)
-        local clear_region = {
+        snip.region = {
             from = {
                 line = cursor[1],
-                col = cursor[2] - #completion_item.word,
+                col = cursor[2] - #completion_item.word + 1,
             },
             to = {
                 line = cursor[1],
-                to = cursor[2],
+                col = cursor[2],
             },
         }
         insert(snip)
