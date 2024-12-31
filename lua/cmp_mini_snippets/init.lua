@@ -48,6 +48,10 @@ function source.complete(self, params, callback)
                     data = {
                         snippet = snip,
                     },
+                    documentation = {
+                        kind = cmp.lsp.MarkupKind.Markdown,
+                        value = snip.desc .. "\n" .. "```" .. vim.bo.filetype .. "\n" .. snip.body .. "\n" .. "```",
+                    },
                 })
             end
         end
@@ -59,22 +63,6 @@ end
 -- When to call this?
 function source.reload()
     _G.MiniSnippets.setup(_G.MiniSnippets.config)
-end
-
-function source.resolve(self, completion_item, callback)
-    local snip = completion_item.data.snippet
-    if not snip then
-        return callback(completion_item)
-    end
-
-    local doc = snip.desc .. "\n" .. "```" .. vim.bo.filetype .. "\n" .. snip.body .. "\n" .. "```"
-
-    completion_item.documentation = {
-        kind = cmp.lsp.MarkupKind.Markdown,
-        value = doc,
-    }
-
-    callback(completion_item)
 end
 
 function source.execute(self, completion_item, callback)
