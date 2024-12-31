@@ -39,7 +39,7 @@ function source.complete(self, params, callback)
     local items = {}
     for _, snip in ipairs(all_snippets or {}) do
         if snip.prefix ~= nil then
-            if snip.prefix ~= "" or not params.option.ignore_empty_prefix then
+            if snip.prefix ~= "" then
                 table.insert(items, {
                     label = snip.prefix,
                     insertTextFormat = 2,
@@ -90,7 +90,10 @@ function source.execute(self, completion_item, callback)
                 line = cursor[1],
                 col = cursor[2] - #completion_item.word,
             },
-            to = cursor,
+            to = {
+                line = cursor[1],
+                to = cursor[2],
+            },
         }
         insert(snip)
     end
