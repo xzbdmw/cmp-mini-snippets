@@ -1,6 +1,6 @@
 # cmp-mini-snippets
 
-[mini-snippets](https://github.com/echasnovski/mini.snippets) completion source for [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
+[mini.snippets](https://github.com/echasnovski/mini.snippets) completion source for [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
 
 Installation, using lazy.nvim
 ```lua
