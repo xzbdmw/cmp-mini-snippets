@@ -3,10 +3,6 @@ local cmp = require("cmp")
 local source = {}
 
 local defaults = {
-    -- By default, the option is false, which means it will feed nvim-cmp all the
-    -- matches and let cmp do the fuzzy match job.
-    -- However, mini.snippets has its own matching rule,
-    -- set to true to use mini.snippets rule in every keystroke.
     use_minisnippets_match_rule = false,
     only_show_in_line_start = false,
 }

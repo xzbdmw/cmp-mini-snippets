@@ -80,9 +80,19 @@ require("mini.snippets").setup({
 
 ## only_show_in_line_start
 When `only_show_in_line_start` is set to true, the completion source will only
-show snippets if the cursor is at the start of the line or if the characters
-before the cursor are all spaces/tabs. If the text before the cursor contains
-anything other than spaces or tabs, no snippets will be shown. This option is more
-similar to how lsp handles snippets, as they are smart enough to know you won't need
-to expand a for loop when you are completing the function signature.
+show snippets if the line before cursor (excluding prefix) are all spaces/tabs. 
+This option is more similar to how lsp handles snippets, as they are smart enough 
+to know you won't need to expand a for loop inside a function signature.
+
 I personally set this to true.
+
+Note when you manually invoke this source, don't set this option, eg:
+```lua
+vim.keymap.set("i", "<c-x><c-s>", function()
+    local cmp = require("cmp")
+    if cmp.visible() then
+        cmp.close()
+    end
+    require("cmp").complete({ config = { sources = { { name = "mini.snippets" } } } })
+end)
+```
