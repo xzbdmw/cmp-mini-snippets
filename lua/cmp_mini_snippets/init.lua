@@ -28,14 +28,15 @@ function source.complete(self, params, callback)
     params.option = vim.tbl_deep_extend("force", defaults, params.option or {})
     local opts = params.option
 
-    -- Retrieve all snippets for the current buffer context from mini.snippets
-    -- Use `match = false` so we get *all* snippets, because cmp will not request
-    -- completion at every keystroke, so let cmp do the fuzzy match job.
-    -- Use `insert = false` so we don’t actually insert anything.
     local all_snippets
     if opts.use_minisnippets_match_rule then
+        -- Use mini.snippets match rule.
         all_snippets = MiniSnippets.expand({ insert = false })
     else
+        -- Retrieve all snippets for the current buffer context from mini.snippets
+        -- Use `match = false` so we get *all* snippets, because cmp will not request
+        -- completion at every keystroke if `isIncomplete=false`, so let cmp do the fuzzy match job.
+        -- Use `insert = false` so we don’t actually insert anything.
         all_snippets = MiniSnippets.expand({ match = false, insert = false })
     end
     local items = {}
