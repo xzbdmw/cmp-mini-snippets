@@ -29,6 +29,9 @@ function source.complete(self, params, callback)
     params.option = vim.tbl_deep_extend("force", defaults, params.option or {})
     local opts = params.option
 
+    -- Cmp is very smart that has correct offset even if complete menu does not show up
+    -- until the last exact match when user has custom mini.snippets match logic. It's
+    -- safe to assume `context_before` is what we want.
     local context_before = string.sub(params.context.cursor_before_line, 1, params.offset - 1)
     if context_before ~= nil and opts.only_show_in_line_start and context_before:match("^%s*$") == nil then
         -- Only show in line start.
