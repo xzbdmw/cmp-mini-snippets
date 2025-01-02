@@ -8,10 +8,15 @@ local defaults = {
     -- However, mini.snippets has its own matching rule,
     -- set to true to use mini.snippets rule in every keystroke.
     use_minisnippets_match_rule = false,
+    only_show_in_line_start = false,
 }
 
 function source.new()
     return setmetatable({}, { __index = source })
+end
+
+source.get_keyword_pattern = function()
+    return "\\%([^[:alnum:][:blank:]]\\|\\w\\+\\)"
 end
 
 function source.get_debug_name(self)
@@ -27,6 +32,15 @@ end
 function source.complete(self, params, callback)
     params.option = vim.tbl_deep_extend("force", defaults, params.option or {})
     local opts = params.option
+
+    local context_before = string.sub(params.context.cursor_before_line, 1, params.offset - 1)
+    if context_before ~= nil and opts.only_show_in_line_start and context_before:match("^%s*$") == nil then
+        -- Only show in line start.
+        callback({
+            items = {},
+        })
+        return
+    end
 
     local all_snippets
     if opts.use_minisnippets_match_rule then

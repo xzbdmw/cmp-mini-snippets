@@ -44,11 +44,18 @@ Installation, using lazy.nvim
 
 ```lua
 sources = {
-    { name = 'mini.snippets', option = { use_minisnippets_match_rule = false } },
+    {
+        name = 'mini.snippets',
+        option = {
+            use_minisnippets_match_rule = false,
+            only_show_in_line_start = false
+        },
+    },
 },
 ```
 
-By default, the option is false, which means it will feed nvim-cmp all the
+## use_minisnippets_match_rule
+By default, `use_minisnippets_match_rule` is false, which means it will feed nvim-cmp all the
 avalible snippets and let cmp do the fuzzy match job.
 However, mini.snippets has its own matching rule,
 set to true to use mini.snippets rule in every keystroke.
@@ -70,3 +77,12 @@ require("mini.snippets").setup({
     }
 })
 ```
+
+## only_show_in_line_start
+When `only_show_in_line_start` is set to true, the completion source will only
+show snippets if the cursor is at the start of the line or if the characters
+before the cursor are all spaces/tabs. If the text before the cursor contains
+anything other than spaces or tabs, no snippets will be shown. This option is more
+similar to how lsp handles snippets, as they are smart enough to know you won't need
+to expand a for loop when you are completing the function signature.
+I personally set this to true.
