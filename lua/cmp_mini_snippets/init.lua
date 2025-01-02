@@ -3,16 +3,12 @@ local cmp = require("cmp")
 local source = {}
 
 local defaults = {
-    -- what should be the option?
+    -- By default, the option is false, which means it will feed nvim-cmp all the
+    -- matches and let cmp do the fuzzy match job.
+    -- However, mini.snippets has its own matching rule,
+    -- set to true to use mini.snippets rule in every keystroke.
+    use_minisnippets_match_rule = false,
 }
-
-local function init_options(params)
-    -- Merge user’s cmp source opts with our defaults, currently none.
-    params.option = vim.tbl_deep_extend("force", defaults, params.option or {})
-    -- vim.validate({
-    -- 	ignore_empty_prefix = { params.option.ignore_empty_prefix, "boolean" },
-    -- })
-end
 
 function source.new()
     return setmetatable({}, { __index = source })
@@ -29,13 +25,19 @@ function source.is_available(self)
 end
 
 function source.complete(self, params, callback)
-    init_options(params)
+    params.option = vim.tbl_deep_extend("force", defaults, params.option or {})
+    local opts = params.option
 
     -- Retrieve all snippets for the current buffer context from mini.snippets
     -- Use `match = false` so we get *all* snippets, because cmp will not request
-    -- completion at every keystrok, so let cmp do the fuzzy match job.
+    -- completion at every keystroke, so let cmp do the fuzzy match job.
     -- Use `insert = false` so we don’t actually insert anything.
-    local all_snippets = MiniSnippets.expand({ match = false, insert = false })
+    local all_snippets
+    if opts.use_minisnippets_match_rule then
+        all_snippets = MiniSnippets.expand({ insert = false })
+    else
+        all_snippets = MiniSnippets.expand({ match = false, insert = false })
+    end
     local items = {}
     for _, snip in ipairs(all_snippets or {}) do
         if snip.prefix ~= nil and snip.prefix ~= "" then
@@ -56,7 +58,16 @@ function source.complete(self, params, callback)
         end
     end
 
-    callback(items)
+    if opts.use_minisnippets_match_rule then
+        callback({
+            items = items,
+            isIncomplete = true,
+        })
+    else
+        callback({
+            items = items,
+        })
+    end
 end
 
 -- When to call this?

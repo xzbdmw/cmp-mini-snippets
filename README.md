@@ -39,3 +39,31 @@ Installation, using lazy.nvim
         end,
     },
 ```
+
+# Option
+
+```lua
+sources = {
+    { name = 'mini.snippets', option = { use_minisnippets_match_rule = false } },
+},
+```
+
+By default, the option is false, which means it will feed nvim-cmp all the
+matches and let cmp do the fuzzy match job.
+However, mini.snippets has its own matching rule,
+set to true to use mini.snippets rule in every keystroke.
+for example:
+
+```lua
+local my_m = function(snippet, pos)
+    -- With this match rule and `use_minisnippets_match_rule=true`,
+    -- this plugin won't feed cmp items unless the match is exact.
+    return MiniSnippets.default_match(snippet, { pattern_fuzzy = "" })
+end
+require("mini.snippets").setup({
+    expand = {
+        match = my_m,
+    }
+})
+```
+
